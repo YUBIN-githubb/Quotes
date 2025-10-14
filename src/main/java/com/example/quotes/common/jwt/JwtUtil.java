@@ -32,16 +32,17 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(String email, UserRole userRole) {
+    public String createToken(Long userId, String email, UserRole userRole) {
         Date date = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(email)
-                        .claim("userRole", userRole)
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME))
-                        .setIssuedAt(date)
-                        .signWith(key, signatureAlgorithm)
+                        .setSubject(String.valueOf(userId)) //JWT의 sub(주제) 필드에 userId를 문자열로 저장
+                        .claim("email", email)
+                        .claim("userRole", userRole) //JWT의 payload에 이메일과 역할(Role)을 추가
+                        .setExpiration(new Date(date.getTime() + TOKEN_TIME)) //토큰의 만료 시간을 현재 시간 + 30분으로 설정
+                        .setIssuedAt(date) //토큰 발급일을 현재시간으로 설정
+                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘으로 서명
                         .compact();
     }
 

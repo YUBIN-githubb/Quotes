@@ -1,4 +1,4 @@
-package com.example.quotes.common.config;
+package com.example.quotes.config;
 
 import com.example.quotes.common.auth.AuthArgumentResolver;
 import org.springframework.context.annotation.Configuration;

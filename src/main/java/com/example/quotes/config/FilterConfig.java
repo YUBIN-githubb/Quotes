@@ -1,4 +1,4 @@
-package com.example.quotes.common.config;
+package com.example.quotes.config;
 
 import com.example.quotes.common.jwt.JwtFilter;
 import com.example.quotes.common.jwt.JwtUtil;
