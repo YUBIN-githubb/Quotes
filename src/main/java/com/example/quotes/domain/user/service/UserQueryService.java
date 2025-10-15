@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -18,8 +16,13 @@ public class UserQueryService {
 
     private final UserRepository userRepository;
 
-    public User getUser(AuthUser authUser) {
+    public User getUserById(AuthUser authUser) {
         return userRepository.findById(authUser.getUserId()).orElseThrow(
+                () -> new CustomException(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
                 () -> new CustomException(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
     }
 

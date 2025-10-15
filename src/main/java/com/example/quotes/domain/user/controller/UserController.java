@@ -9,6 +9,7 @@ import com.example.quotes.domain.user.dto.response.UserResponse;
 import com.example.quotes.domain.user.entity.User;
 import com.example.quotes.domain.user.service.UserCommandService;
 import com.example.quotes.domain.user.service.UserQueryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,30 +24,36 @@ public class UserController {
     @GetMapping("/users")
     public ResponseEntity<UserResponse> getUser(@Auth AuthUser authUser) {
 
-        User user = userQueryService.getUser(authUser);
+        User user = userQueryService.getUserById(authUser);
         UserResponse userResponse = UserResponse.of(user.getEmail(), user.getUserRole(), user.getProfileUrl(), user.getNickname());
         return ResponseEntity.ok(userResponse);
     }
 
     @PutMapping("/users")
-    public ResponseEntity<UserResponse> updateUser(@Auth AuthUser authUser, UpdateUserRequest request) {
+    public ResponseEntity<UserResponse> updateUser(
+            @Auth AuthUser authUser,
+            @Valid @RequestBody UpdateUserRequest request) {
 
-        User user = userCommandService.updateUser(authUser, request);
+        User user = userCommandService.updateUser(authUser, request.getProfileUrl(), request.getNickname());
         UserResponse userResponse = UserResponse.of(user.getEmail(), user.getUserRole(), user.getProfileUrl(), user.getNickname());
         return ResponseEntity.ok(userResponse);
     }
 
     @PatchMapping("/users")
-    public ResponseEntity<String> updatePassword(@Auth AuthUser authUser, UpdatePasswordRequest request) {
+    public ResponseEntity<String> updatePassword(
+            @Auth AuthUser authUser,
+            @Valid @RequestBody UpdatePasswordRequest request) {
 
-        userCommandService.updatePassword(authUser, request);
+        userCommandService.updatePassword(authUser, request.getOldPassword(), request.getNewPassword());
         return ResponseEntity.ok("비밀번호가 성공적으로 업데이트 되었습니다.");
     }
 
     @DeleteMapping("/users")
-    public ResponseEntity<String> deleteUser(@Auth AuthUser authUser, WithdrawUserRequest request) {
+    public ResponseEntity<String> deleteUser(
+            @Auth AuthUser authUser,
+            @Valid @RequestBody WithdrawUserRequest request) {
 
-        userCommandService.withdrawUser(authUser, request);
+        userCommandService.withdrawUser(authUser, request.getPassword());
         return ResponseEntity.ok("회원탈퇴가 성공적으로 되었습니다.");
     }
 }

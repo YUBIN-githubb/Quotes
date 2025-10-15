@@ -7,10 +7,10 @@ import lombok.Getter;
 @Getter
 public class UpdateUserRequest {
 
-    @NotBlank
+    @NotBlank(message = "프로필 사진 입력은 필수입니다.")
     private String profileUrl;
 
-    @NotBlank
+    @NotBlank(message = "닉네임 입력은 필수입니다.")
     private String nickname;
 
 }
