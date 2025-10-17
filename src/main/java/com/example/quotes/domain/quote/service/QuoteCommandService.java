@@ -1,11 +1,11 @@
-package com.example.quotes.domain.quotes.service;
+package com.example.quotes.domain.quote.service;
 
 import com.example.quotes.common.dto.AuthUser;
 import com.example.quotes.common.enums.Category;
 import com.example.quotes.common.enums.IsPublic;
 import com.example.quotes.common.exceptions.CustomException;
-import com.example.quotes.domain.quotes.entity.Quote;
-import com.example.quotes.domain.quotes.repository.QuoteRepository;
+import com.example.quotes.domain.quote.entity.Quote;
+import com.example.quotes.domain.quote.repository.QuoteRepository;
 import com.example.quotes.domain.user.entity.User;
 import com.example.quotes.domain.user.service.UserQueryService;
 import lombok.RequiredArgsConstructor;

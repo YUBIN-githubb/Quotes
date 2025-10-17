@@ -1,7 +1,6 @@
-package com.example.quotes.domain.quotes.repository;
+package com.example.quotes.domain.quote.repository;
 
-import com.example.quotes.domain.quotes.entity.Quote;
-import com.example.quotes.domain.user.entity.User;
+import com.example.quotes.domain.quote.entity.Quote;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;

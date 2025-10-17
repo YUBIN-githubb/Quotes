@@ -1,16 +1,13 @@
-package com.example.quotes.domain.quotes.dto.request;
+package com.example.quotes.domain.quote.dto.request;
 
 import com.example.quotes.common.enums.Category;
 import com.example.quotes.common.enums.IsPublic;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
-public class CreateQuoteRequest {
+public class UpdateQuoteRequest {
 
     @NotBlank(message = "제목 입력은 필수입니다.")
     private String title;

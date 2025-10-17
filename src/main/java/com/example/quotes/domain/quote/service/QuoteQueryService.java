@@ -1,10 +1,9 @@
-package com.example.quotes.domain.quotes.service;
+package com.example.quotes.domain.quote.service;
 
-import com.example.quotes.common.annotation.Auth;
 import com.example.quotes.common.dto.AuthUser;
 import com.example.quotes.common.exceptions.CustomException;
-import com.example.quotes.domain.quotes.entity.Quote;
-import com.example.quotes.domain.quotes.repository.QuoteRepository;
+import com.example.quotes.domain.quote.entity.Quote;
+import com.example.quotes.domain.quote.repository.QuoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

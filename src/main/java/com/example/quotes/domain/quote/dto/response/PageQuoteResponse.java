@@ -1,12 +1,10 @@
-package com.example.quotes.domain.quotes.dto.response;
+package com.example.quotes.domain.quote.dto.response;
 
-import com.example.quotes.common.dto.PageResponse;
 import com.example.quotes.common.enums.Category;
 import com.example.quotes.common.enums.IsPublic;
-import com.example.quotes.domain.quotes.entity.Quote;
+import com.example.quotes.domain.quote.entity.Quote;
 import lombok.Getter;
 
-import java.awt.print.Book;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;

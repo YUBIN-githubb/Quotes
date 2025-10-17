@@ -1,4 +1,4 @@
-package com.example.quotes.domain.quotes.dto.request;
+package com.example.quotes.domain.quote.dto.request;
 
 import com.example.quotes.common.enums.IsPublic;
 import jakarta.validation.constraints.NotNull;

@@ -22,7 +22,7 @@ public class UserQueryService {
     }
 
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(
+        return userRepository.findByEmailAndDeletedAtIsNull(email).orElseThrow(
                 () -> new CustomException(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
     }
 

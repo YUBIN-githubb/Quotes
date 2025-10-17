@@ -1,11 +1,8 @@
-package com.example.quotes.domain.quotes.dto.response;
+package com.example.quotes.domain.quote.dto.response;
 
 import com.example.quotes.common.enums.Category;
 import com.example.quotes.common.enums.IsPublic;
-import jakarta.persistence.Column;
 import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 

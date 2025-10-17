@@ -1,4 +1,4 @@
-package com.example.quotes.domain.quotes.entity;
+package com.example.quotes.domain.quote.entity;
 
 import com.example.quotes.common.entity.BaseEntity;
 import com.example.quotes.common.enums.Category;
@@ -8,8 +8,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "quotes")

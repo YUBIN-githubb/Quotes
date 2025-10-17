@@ -1,15 +1,15 @@
-package com.example.quotes.domain.quotes.controller;
+package com.example.quotes.domain.quote.controller;
 
 import com.example.quotes.common.annotation.Auth;
 import com.example.quotes.common.dto.AuthUser;
-import com.example.quotes.domain.quotes.dto.request.CreateQuoteRequest;
-import com.example.quotes.domain.quotes.dto.request.UpdateQuoteIsPublicRequest;
-import com.example.quotes.domain.quotes.dto.request.UpdateQuoteRequest;
-import com.example.quotes.domain.quotes.dto.response.PageQuoteResponse;
-import com.example.quotes.domain.quotes.dto.response.QuoteResponse;
-import com.example.quotes.domain.quotes.entity.Quote;
-import com.example.quotes.domain.quotes.service.QuoteCommandService;
-import com.example.quotes.domain.quotes.service.QuoteQueryService;
+import com.example.quotes.domain.quote.dto.request.CreateQuoteRequest;
+import com.example.quotes.domain.quote.dto.request.UpdateQuoteIsPublicRequest;
+import com.example.quotes.domain.quote.dto.request.UpdateQuoteRequest;
+import com.example.quotes.domain.quote.dto.response.PageQuoteResponse;
+import com.example.quotes.domain.quote.dto.response.QuoteResponse;
+import com.example.quotes.domain.quote.entity.Quote;
+import com.example.quotes.domain.quote.service.QuoteCommandService;
+import com.example.quotes.domain.quote.service.QuoteQueryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
