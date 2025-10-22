@@ -1,6 +1,5 @@
 package com.example.quotes.domain.like.service;
 
-import com.example.quotes.common.dto.AuthUser;
 import com.example.quotes.common.exceptions.CustomException;
 import com.example.quotes.domain.like.entity.Like;
 import com.example.quotes.domain.like.repository.LikeRepository;
@@ -41,7 +40,7 @@ public class LikeCommandService {
 
     public void deleteLike(Long userId, Long quoteId, Long likeId) {
 
-        Like like = likeRepository.findWithUserAndShowById(likeId).orElseThrow(
+        Like like = likeRepository.findWithUserAndQuoteById(likeId).orElseThrow(
                 () -> new CustomException(NOT_FOUND, "해당 좋아요를 찾을 수 없습니다."));
 
         if (!Objects.equals(like.getUser().getId(), userId)) {
