@@ -25,18 +25,18 @@ public class QuoteCommandService {
     private final QuoteQueryService quoteQueryService;
     private final UserQueryService userQueryService;
 
-    public Quote createQuote(AuthUser authUser, String title, String author, Category category, Long pageNumber, String sentence, String thought, IsPublic isPublic) {
+    public Quote createQuote(Long userId, String title, String author, Category category, Long pageNumber, String sentence, String thought, IsPublic isPublic) {
 
-        User user = userQueryService.getUserById(authUser);
+        User user = userQueryService.getUserById(userId);
         Quote quote = Quote.create(user, title, author, category, pageNumber, sentence, thought, isPublic);
         return quoteRepository.save(quote);
     }
 
-    public Quote updateQuote(AuthUser authUser, Long quoteId, String title, String author, Category category, Long pageNumber, String sentence, String thought, IsPublic isPublic) {
+    public Quote updateQuote(Long userId, Long quoteId, String title, String author, Category category, Long pageNumber, String sentence, String thought, IsPublic isPublic) {
 
         Quote quote = quoteQueryService.getQuote(quoteId);
 
-        if (!Objects.equals(authUser.getUserId(), quote.getUser().getId())) {
+        if (!Objects.equals(userId, quote.getUser().getId())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "본인 외에 수정은 불가합니다.");
         }
 
@@ -45,22 +45,22 @@ public class QuoteCommandService {
         return quote;
     }
 
-    public void updateQuoteIsPublic(AuthUser authUser, Long quoteId, IsPublic isPublic) {
+    public void updateQuoteIsPublic(Long userId, Long quoteId, IsPublic isPublic) {
 
         Quote quote = quoteQueryService.getQuote(quoteId);
 
-        if (!Objects.equals(authUser.getUserId(), quote.getUser().getId())) {
+        if (!Objects.equals(userId, quote.getUser().getId())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "본인 외에 수정은 불가합니다.");
         }
 
         quote.updateIsPublic(isPublic);
     }
 
-    public void deleteQuote(AuthUser authUser, Long quoteId) {
+    public void deleteQuote(Long userId, Long quoteId) {
 
         Quote quote = quoteQueryService.getQuote(quoteId);
 
-        if (!Objects.equals(authUser.getUserId(), quote.getUser().getId())) {
+        if (!Objects.equals(userId, quote.getUser().getId())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "본인 외에 삭제는 불가합니다.");
         }
 

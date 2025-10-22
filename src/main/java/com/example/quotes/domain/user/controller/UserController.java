@@ -24,7 +24,7 @@ public class UserController {
     @GetMapping("/users")
     public ResponseEntity<UserResponse> getUser(@Auth AuthUser authUser) {
 
-        User user = userQueryService.getUserById(authUser);
+        User user = userQueryService.getUserById(authUser.getUserId());
         UserResponse userResponse = UserResponse.of(user.getEmail(), user.getUserRole(), user.getProfileUrl(), user.getNickname());
         return ResponseEntity.ok(userResponse);
     }
@@ -34,7 +34,7 @@ public class UserController {
             @Auth AuthUser authUser,
             @Valid @RequestBody UpdateUserRequest request) {
 
-        User user = userCommandService.updateUser(authUser, request.getProfileUrl(), request.getNickname());
+        User user = userCommandService.updateUser(authUser.getUserId(), request.getProfileUrl(), request.getNickname());
         UserResponse userResponse = UserResponse.of(user.getEmail(), user.getUserRole(), user.getProfileUrl(), user.getNickname());
         return ResponseEntity.ok(userResponse);
     }
@@ -44,7 +44,7 @@ public class UserController {
             @Auth AuthUser authUser,
             @Valid @RequestBody UpdatePasswordRequest request) {
 
-        userCommandService.updatePassword(authUser, request.getOldPassword(), request.getNewPassword());
+        userCommandService.updatePassword(authUser.getUserId(), request.getOldPassword(), request.getNewPassword());
         return ResponseEntity.ok("비밀번호가 성공적으로 업데이트 되었습니다.");
     }
 
@@ -53,7 +53,7 @@ public class UserController {
             @Auth AuthUser authUser,
             @Valid @RequestBody WithdrawUserRequest request) {
 
-        userCommandService.withdrawUser(authUser, request.getPassword());
+        userCommandService.withdrawUser(authUser.getUserId(), request.getPassword());
         return ResponseEntity.ok("회원탈퇴가 성공적으로 되었습니다.");
     }
 }

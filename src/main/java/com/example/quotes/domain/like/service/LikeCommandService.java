@@ -26,9 +26,9 @@ public class LikeCommandService {
     private final UserQueryService userQueryService;
     private final QuoteQueryService quoteQueryService;
 
-    public void createLike(AuthUser authUser, Long quoteId) {
+    public void createLike(Long userId, Long quoteId) {
 
-        User user = userQueryService.getUserById(authUser);
+        User user = userQueryService.getUserById(userId);
         Quote quote = quoteQueryService.getQuote(quoteId);
 
         if(likeRepository.existsByUserIdAndQuoteId(user.getId(), quote.getId())) {
@@ -39,17 +39,17 @@ public class LikeCommandService {
         likeRepository.save(like);
     }
 
-    public void deleteLike(AuthUser authUser, Long quoteId, Long likeId) {
+    public void deleteLike(Long userId, Long quoteId, Long likeId) {
 
         Like like = likeRepository.findWithUserAndShowById(likeId).orElseThrow(
                 () -> new CustomException(NOT_FOUND, "해당 좋아요를 찾을 수 없습니다."));
 
-        if (!Objects.equals(like.getUser().getId(), authUser.getUserId())) {
+        if (!Objects.equals(like.getUser().getId(), userId)) {
             throw new CustomException(BAD_REQUEST, "해당 좋아요를 누른 사용자와 요청한 사용자가 다릅니다.");
         }
 
         if (!Objects.equals(like.getQuote().getId(), quoteId)) {
-            throw new CustomException(BAD_REQUEST, "해당 좋아요가 눌린 공연과 요청된 공연이 다릅니다.");
+            throw new CustomException(BAD_REQUEST, "해당 좋아요가 눌린 필사와 요청된 필사가 다릅니다.");
         }
 
         likeRepository.delete(like);

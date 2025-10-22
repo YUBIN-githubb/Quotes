@@ -20,9 +20,9 @@ public class LikeQueryService {
 
     private final LikeRepository likeRepository;
 
-    public Page<Like> getLikes(AuthUser authUser, int page, int size) {
+    public Page<Like> getLikes(Long userId, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        return likeRepository.findByUserId(authUser.getUserId(), pageable);
+        return likeRepository.findByUserId(userId, pageable);
     }
 }

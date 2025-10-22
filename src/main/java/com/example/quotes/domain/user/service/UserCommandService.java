@@ -21,9 +21,9 @@ public class UserCommandService {
     private final UserQueryService userQueryService;
     private final PasswordEncoder passwordEncoder;
 
-    public User updatePassword(AuthUser authUser, String oldPassword, String newPassword) {
+    public User updatePassword(Long userId, String oldPassword, String newPassword) {
 
-        User user = userQueryService.getUserById(authUser);
+        User user = userQueryService.getUserById(userId);
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
@@ -34,18 +34,18 @@ public class UserCommandService {
         return user;
     }
 
-    public User updateUser(AuthUser authUser, String profileUrl, String nickname) {
+    public User updateUser(Long userId, String profileUrl, String nickname) {
 
-        User user = userQueryService.getUserById(authUser);
+        User user = userQueryService.getUserById(userId);
 
         user.updateUser(profileUrl, nickname);
 
         return user;
     }
 
-    public User withdrawUser(AuthUser authUser, String password) {
+    public User withdrawUser(Long userId, String password) {
 
-        User user = userQueryService.getUserById(authUser);
+        User user = userQueryService.getUserById(userId);
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");

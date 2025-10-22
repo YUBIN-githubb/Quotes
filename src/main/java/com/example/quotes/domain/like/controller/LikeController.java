@@ -31,7 +31,7 @@ public class LikeController {
     public ResponseEntity<Void> createLike(
             @Auth AuthUser authUser,
             @PathVariable Long quoteId) {
-        likeCommandService.createLike(authUser, quoteId);
+        likeCommandService.createLike(authUser.getUserId(), quoteId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -40,7 +40,7 @@ public class LikeController {
             @Auth AuthUser authUser,
             @PathVariable Long quoteId,
             @PathVariable Long likeId) {
-        likeCommandService.deleteLike(authUser, quoteId, likeId);
+        likeCommandService.deleteLike(authUser.getUserId(), quoteId, likeId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -50,7 +50,7 @@ public class LikeController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<Like> likes = likeQueryService.getLikes(authUser, page, size);
+        Page<Like> likes = likeQueryService.getLikes(authUser.getUserId(), page, size);
         PageLikeResponse pageLikeResponse = PageLikeResponse.of(likes.getContent(), likes.getSize(), likes.getNumber(), likes.getTotalElements(), likes.getTotalPages());
         return ResponseEntity.ok(pageLikeResponse);
     }

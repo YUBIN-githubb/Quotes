@@ -29,7 +29,7 @@ public class QuoteController {
             @Valid @RequestBody CreateQuoteRequest request) {
 
         Quote quote = quoteCommandService.createQuote(
-                authUser,
+                authUser.getUserId(),
                 request.getTitle(),
                 request.getAuthor(),
                 request.getCategory(),
@@ -63,7 +63,7 @@ public class QuoteController {
             @Valid @RequestBody UpdateQuoteRequest request) {
 
         Quote quote = quoteCommandService.updateQuote(
-                authUser,
+                authUser.getUserId(),
                 quoteId,
                 request.getTitle(),
                 request.getAuthor(),
@@ -97,7 +97,7 @@ public class QuoteController {
             @PathVariable Long quoteId,
             @Valid @RequestBody UpdateQuoteIsPublicRequest request) {
 
-        quoteCommandService.updateQuoteIsPublic(authUser, quoteId, request.getIsPublic());
+        quoteCommandService.updateQuoteIsPublic(authUser.getUserId(), quoteId, request.getIsPublic());
         return ResponseEntity.ok("공개여부가 성공적으로 전환되었습니다.");
     }
 
@@ -106,7 +106,7 @@ public class QuoteController {
             @Auth AuthUser authUser,
             @PathVariable Long quoteId) {
 
-        quoteCommandService.deleteQuote(authUser, quoteId);
+        quoteCommandService.deleteQuote(authUser.getUserId(), quoteId);
         return ResponseEntity.ok("성공적으로 삭제되었습니다.");
     }
 
@@ -116,7 +116,7 @@ public class QuoteController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<Quote> quotes = quoteQueryService.getQuotes(authUser, page, size);
+        Page<Quote> quotes = quoteQueryService.getQuotes(authUser.getUserId(), page, size);
         PageQuoteResponse pageQuoteResponse = PageQuoteResponse.of(quotes.getContent(), quotes.getSize(), quotes.getNumber(), quotes.getTotalElements(), quotes.getTotalPages());
         return ResponseEntity.ok(pageQuoteResponse);
     }

@@ -27,10 +27,10 @@ public class QuoteQueryService {
         );
     }
 
-    public Page<Quote> getQuotes(AuthUser authUser, int page, int size) {
+    public Page<Quote> getQuotes(Long userId, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return quoteRepository.findByUserIdAndDeletedAtIsNull(authUser.getUserId(), pageable);
+        return quoteRepository.findByUserIdAndDeletedAtIsNull(userId, pageable);
     }
 
     public Quote getQuoteById(Long quoteId) {

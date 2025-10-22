@@ -16,8 +16,8 @@ public class UserQueryService {
 
     private final UserRepository userRepository;
 
-    public User getUserById(AuthUser authUser) {
-        return userRepository.findById(authUser.getUserId()).orElseThrow(
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(
                 () -> new CustomException(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
     }
 
