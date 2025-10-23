@@ -4,6 +4,7 @@ import com.example.quotes.domain.comment.entity.Comment;
 import com.example.quotes.domain.quote.dto.response.QuoteResponse;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -32,7 +33,10 @@ public class PageCommentResponse {
                     String nickname = comment.getUser().getNickname();
                     String profileUrl = comment.getUser().getProfileUrl();
                     String contents = comment.getContents();
-                    return CommentResponse.of(id, quoteId, userId, nickname, profileUrl, contents);
+                    LocalDateTime createdAt = comment.getCreatedAt();
+                    LocalDateTime modifiedAt = comment.getModifiedAt();
+                    LocalDateTime deletedAt = comment.getDeletedAt();
+                    return CommentResponse.of(id, quoteId, userId, nickname, profileUrl, contents, createdAt, modifiedAt, deletedAt);
                 }
         ).toList();
         return new PageCommentResponse(list, size, page, totalElements, totalPages);

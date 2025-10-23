@@ -45,7 +45,16 @@ public class CommentController {
             @Valid @RequestBody CreateCommentRequest request) {
 
         Comment comment = commentCommandService.createComment(authUser.getUserId(), quoteId, request.getContents());
-        CommentResponse commentResponse = CommentResponse.of(comment.getId(), comment.getQuote().getId(), comment.getUser().getId(), comment.getUser().getNickname(), comment.getUser().getProfileUrl(), comment.getContents());
+        CommentResponse commentResponse = CommentResponse.of(
+                comment.getId(),
+                comment.getQuote().getId(),
+                comment.getUser().getId(),
+                comment.getUser().getNickname(),
+                comment.getUser().getProfileUrl(),
+                comment.getContents(),
+                comment.getCreatedAt(),
+                comment.getModifiedAt(),
+                comment.getDeletedAt());
         return ResponseEntity.ok(commentResponse);
     }
 
@@ -57,7 +66,16 @@ public class CommentController {
             @Valid @RequestBody UpdateCommentRequest request) {
 
         Comment comment = commentCommandService.updateComment(authUser.getUserId(), quoteId, commentId, request.getContents());
-        CommentResponse commentResponse = CommentResponse.of(comment.getId(), comment.getQuote().getId(), comment.getUser().getId(), comment.getUser().getNickname(), comment.getUser().getProfileUrl(), comment.getContents());
+        CommentResponse commentResponse = CommentResponse.of(
+                comment.getId(),
+                comment.getQuote().getId(),
+                comment.getUser().getId(),
+                comment.getUser().getNickname(),
+                comment.getUser().getProfileUrl(),
+                comment.getContents(),
+                comment.getCreatedAt(),
+                comment.getModifiedAt(),
+                comment.getDeletedAt());
         return ResponseEntity.ok(commentResponse);
     }
 
