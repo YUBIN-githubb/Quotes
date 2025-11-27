@@ -2,6 +2,7 @@ package com.example.quotes.domain.quote.controller;
 
 import com.example.quotes.common.annotation.Auth;
 import com.example.quotes.common.dto.AuthUser;
+import com.example.quotes.domain.like.service.LikeQueryService;
 import com.example.quotes.domain.quote.dto.request.CreateQuoteRequest;
 import com.example.quotes.domain.quote.dto.request.UpdateQuoteIsPublicRequest;
 import com.example.quotes.domain.quote.dto.request.UpdateQuoteRequest;
@@ -16,12 +17,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 public class QuoteController {
 
     private final QuoteCommandService quoteCommandService;
     private final QuoteQueryService quoteQueryService;
+    private final LikeQueryService likeQueryService;
 
     @PostMapping("/quotes")
     public ResponseEntity<QuoteResponse> createQuote(
@@ -110,13 +115,13 @@ public class QuoteController {
         return ResponseEntity.ok("성공적으로 삭제되었습니다.");
     }
 
+    // 모든 사용자 Quote 조회
     @GetMapping("/quotes")
     public ResponseEntity<PageQuoteResponse> getQuotes(
-            @Auth AuthUser authUser,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<Quote> quotes = quoteQueryService.getQuotes(authUser.getUserId(), page, size);
+        Page<Quote> quotes = quoteQueryService.getQuotes(page, size);
         PageQuoteResponse pageQuoteResponse = PageQuoteResponse.of(quotes.getContent(), quotes.getSize(), quotes.getNumber(), quotes.getTotalElements(), quotes.getTotalPages());
         return ResponseEntity.ok(pageQuoteResponse);
     }

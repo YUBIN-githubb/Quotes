@@ -15,4 +15,7 @@ public interface QuoteRepository extends JpaRepository<Quote, Long> {
 
     @EntityGraph(attributePaths = {"user"})
     Optional<Quote> findByIdAndDeletedAtIsNull(Long id);
+
+    @EntityGraph(attributePaths = {"user"})
+    Page<Quote> findByDeletedAtIsNull(Pageable pageable);
 }

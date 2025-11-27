@@ -1,6 +1,5 @@
 package com.example.quotes.domain.quote.service;
 
-import com.example.quotes.common.dto.AuthUser;
 import com.example.quotes.common.exceptions.CustomException;
 import com.example.quotes.domain.quote.entity.Quote;
 import com.example.quotes.domain.quote.repository.QuoteRepository;
@@ -27,7 +26,7 @@ public class QuoteQueryService {
         );
     }
 
-    public Page<Quote> getQuotes(Long userId, int page, int size) {
+    public Page<Quote> getMyQuotes(Long userId, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return quoteRepository.findByUserIdAndDeletedAtIsNull(userId, pageable);
@@ -38,5 +37,10 @@ public class QuoteQueryService {
         return quoteRepository.findByIdAndDeletedAtIsNull(quoteId).orElseThrow(
                 () -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 필사입니다.")
         );
+    }
+
+    public Page<Quote> getQuotes(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return quoteRepository.findByDeletedAtIsNull(pageable);
     }
 }

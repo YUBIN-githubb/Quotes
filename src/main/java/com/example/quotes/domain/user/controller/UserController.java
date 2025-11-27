@@ -2,6 +2,9 @@ package com.example.quotes.domain.user.controller;
 
 import com.example.quotes.common.annotation.Auth;
 import com.example.quotes.common.dto.AuthUser;
+import com.example.quotes.domain.quote.dto.response.PageQuoteResponse;
+import com.example.quotes.domain.quote.entity.Quote;
+import com.example.quotes.domain.quote.service.QuoteQueryService;
 import com.example.quotes.domain.user.dto.request.UpdatePasswordRequest;
 import com.example.quotes.domain.user.dto.request.UpdateUserRequest;
 import com.example.quotes.domain.user.dto.request.WithdrawUserRequest;
@@ -11,6 +14,7 @@ import com.example.quotes.domain.user.service.UserCommandService;
 import com.example.quotes.domain.user.service.UserQueryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +24,7 @@ public class UserController {
 
     private final UserQueryService userQueryService;
     private final UserCommandService userCommandService;
+    private final QuoteQueryService quoteQueryService;
 
     @GetMapping("/users")
     public ResponseEntity<UserResponse> getUser(@Auth AuthUser authUser) {
@@ -55,5 +60,16 @@ public class UserController {
 
         userCommandService.withdrawUser(authUser.getUserId(), request.getPassword());
         return ResponseEntity.ok("회원탈퇴가 성공적으로 되었습니다.");
+    }
+
+    @GetMapping("/users/me/quotes")
+    public ResponseEntity<PageQuoteResponse> getQuotes(
+            @Auth AuthUser authUser,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<Quote> quotes = quoteQueryService.getMyQuotes(authUser.getUserId(), page, size);
+        PageQuoteResponse pageQuoteResponse = PageQuoteResponse.of(quotes.getContent(), quotes.getSize(), quotes.getNumber(), quotes.getTotalElements(), quotes.getTotalPages());
+        return ResponseEntity.ok(pageQuoteResponse);
     }
 }
