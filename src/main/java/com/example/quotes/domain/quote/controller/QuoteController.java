@@ -7,6 +7,7 @@ import com.example.quotes.domain.quote.dto.request.CreateQuoteRequest;
 import com.example.quotes.domain.quote.dto.request.UpdateQuoteIsPublicRequest;
 import com.example.quotes.domain.quote.dto.request.UpdateQuoteRequest;
 import com.example.quotes.domain.quote.dto.response.PageQuoteResponse;
+import com.example.quotes.domain.quote.dto.response.QuoteFeedResponse;
 import com.example.quotes.domain.quote.dto.response.QuoteResponse;
 import com.example.quotes.domain.quote.entity.Quote;
 import com.example.quotes.domain.quote.service.QuoteCommandService;
@@ -115,15 +116,40 @@ public class QuoteController {
         return ResponseEntity.ok("성공적으로 삭제되었습니다.");
     }
 
-    // 모든 사용자 Quote 조회
     @GetMapping("/quotes")
-    public ResponseEntity<PageQuoteResponse> getQuotes(
+    public ResponseEntity<Page<QuoteFeedResponse>> getQuotes(
+            @Auth AuthUser authUser,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<Quote> quotes = quoteQueryService.getQuotes(page, size);
-        PageQuoteResponse pageQuoteResponse = PageQuoteResponse.of(quotes.getContent(), quotes.getSize(), quotes.getNumber(), quotes.getTotalElements(), quotes.getTotalPages());
-        return ResponseEntity.ok(pageQuoteResponse);
+        // 1. 인용구 데이터 가져오기
+        Page<Quote> quotePage = quoteQueryService.getQuotes(page, size);
+
+        // 2. 내 좋아요 데이터 가져오기
+        Map<Long, Long> likeMap = likeQueryService.getMyLikeMap(authUser.getUserId(), quotePage.getContent());
+
+        // 3. 조립
+        Page<QuoteFeedResponse> response = quotePage.map(quote -> {
+            QuoteResponse basicDto = QuoteResponse.of(
+                    quote.getId(),
+                    quote.getUser().getId(),
+                    quote.getUser().getNickname(),
+                    quote.getTitle(),
+                    quote.getAuthor(),
+                    quote.getCategory(),
+                    quote.getPageNumber(),
+                    quote.getSentence(),
+                    quote.getThought(),
+                    quote.getIsPublic(),
+                    quote.getCreatedAt(),
+                    quote.getModifiedAt(),
+                    quote.getDeletedAt()
+            );
+            Long myLikeId = likeMap.get(quote.getId());
+            return QuoteFeedResponse.of(basicDto,myLikeId);
+        });
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/quotes/{quoteId}")

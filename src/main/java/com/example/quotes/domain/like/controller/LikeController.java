@@ -3,6 +3,7 @@ package com.example.quotes.domain.like.controller;
 import com.example.quotes.common.annotation.Auth;
 import com.example.quotes.common.dto.AuthUser;
 import com.example.quotes.common.enums.Category;
+import com.example.quotes.domain.like.dto.response.CreateLikeResponse;
 import com.example.quotes.domain.like.dto.response.LikeResponse;
 import com.example.quotes.domain.like.dto.response.PageLikeResponse;
 import com.example.quotes.domain.like.entity.Like;
@@ -28,11 +29,12 @@ public class LikeController {
     private final LikeQueryService likeQueryService;
 
     @PostMapping("/quotes/{quoteId}/likes")
-    public ResponseEntity<Void> createLike(
+    public ResponseEntity<CreateLikeResponse> createLike(
             @Auth AuthUser authUser,
             @PathVariable Long quoteId) {
-        likeCommandService.createLike(authUser.getUserId(), quoteId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        Like like = likeCommandService.createLike(authUser.getUserId(), quoteId);
+        CreateLikeResponse createLikeResponse = CreateLikeResponse.of(like.getId(), like.getUser().getId(), like.getQuote().getId());
+        return ResponseEntity.ok(createLikeResponse);
     }
 
     @DeleteMapping("/quotes/{quoteId}/likes/{likeId}")

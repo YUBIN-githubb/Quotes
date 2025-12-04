@@ -11,7 +11,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,5 +27,24 @@ public class LikeQueryService {
 
         Pageable pageable = PageRequest.of(page, size);
         return likeRepository.findByUserId(userId, pageable);
+    }
+
+    public Map<Long, Long> getMyLikeMap(Long userId, List<Quote> quotes) {
+        if (userId == null || quotes.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        List<Long> quoteIds = quotes.stream()
+                .map(Quote::getId)
+                .toList();
+
+        List<Like> myLikes = likeRepository.findAllByUserIdAndQuoteIdIn(userId, quoteIds);
+
+        // QuoteId -> LikeId 매핑으로 변환
+        return myLikes.stream()
+                .collect(Collectors.toMap(
+                        like -> like.getQuote().getId(),
+                        Like::getId
+                ));
     }
 }

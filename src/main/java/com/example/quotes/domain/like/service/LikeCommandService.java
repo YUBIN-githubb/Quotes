@@ -25,7 +25,7 @@ public class LikeCommandService {
     private final UserQueryService userQueryService;
     private final QuoteQueryService quoteQueryService;
 
-    public void createLike(Long userId, Long quoteId) {
+    public Like createLike(Long userId, Long quoteId) {
 
         User user = userQueryService.getUserById(userId);
         Quote quote = quoteQueryService.getQuote(quoteId);
@@ -35,7 +35,7 @@ public class LikeCommandService {
         }
 
         Like like = Like.create(user, quote);
-        likeRepository.save(like);
+        return likeRepository.save(like);
     }
 
     public void deleteLike(Long userId, Long quoteId, Long likeId) {
