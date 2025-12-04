@@ -47,4 +47,8 @@ public class LikeQueryService {
                         Like::getId
                 ));
     }
+
+    public Long countLikes(Long quoteId) {
+        return likeRepository.countByQuoteId(quoteId);
+    }
 }

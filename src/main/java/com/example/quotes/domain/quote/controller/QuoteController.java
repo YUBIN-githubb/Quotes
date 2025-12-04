@@ -146,7 +146,8 @@ public class QuoteController {
                     quote.getDeletedAt()
             );
             Long myLikeId = likeMap.get(quote.getId());
-            return QuoteFeedResponse.of(basicDto,myLikeId);
+            Long likeCount = likeQueryService.countLikes(quote.getId());
+            return QuoteFeedResponse.of(basicDto, myLikeId, likeCount);
         });
 
         return ResponseEntity.ok(response);

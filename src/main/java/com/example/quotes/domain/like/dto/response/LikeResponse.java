@@ -23,6 +23,7 @@ public class LikeResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
     private final LocalDateTime deletedAt;
+    private final Long likeCount;
 
     private LikeResponse(
             Long id,
@@ -38,7 +39,8 @@ public class LikeResponse {
             IsPublic isPublic,
             LocalDateTime createdAt,
             LocalDateTime modifiedAt,
-            LocalDateTime deletedAt
+            LocalDateTime deletedAt,
+            Long likeCount
     ) {
         this.id = id;
         this.quoteId = quoteId;
@@ -54,6 +56,7 @@ public class LikeResponse {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.deletedAt = deletedAt;
+        this.likeCount = likeCount;
     }
 
     public static LikeResponse of(
@@ -70,7 +73,8 @@ public class LikeResponse {
             IsPublic isPublic,
             LocalDateTime createdAt,
             LocalDateTime modifiedAt,
-            LocalDateTime deletedAt) {
-        return new LikeResponse(id, quoteId, userId, nickname, title, author, category, pageNumber, sentence, thought, isPublic, createdAt, modifiedAt, deletedAt);
+            LocalDateTime deletedAt,
+            Long likeCount) {
+        return new LikeResponse(id, quoteId, userId, nickname, title, author, category, pageNumber, sentence, thought, isPublic, createdAt, modifiedAt, deletedAt, likeCount);
     }
 }

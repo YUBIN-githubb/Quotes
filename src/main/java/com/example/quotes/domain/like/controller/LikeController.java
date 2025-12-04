@@ -2,24 +2,16 @@ package com.example.quotes.domain.like.controller;
 
 import com.example.quotes.common.annotation.Auth;
 import com.example.quotes.common.dto.AuthUser;
-import com.example.quotes.common.enums.Category;
 import com.example.quotes.domain.like.dto.response.CreateLikeResponse;
 import com.example.quotes.domain.like.dto.response.LikeResponse;
-import com.example.quotes.domain.like.dto.response.PageLikeResponse;
 import com.example.quotes.domain.like.entity.Like;
 import com.example.quotes.domain.like.service.LikeCommandService;
 import com.example.quotes.domain.like.service.LikeQueryService;
-import com.example.quotes.domain.quote.entity.Quote;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,13 +39,30 @@ public class LikeController {
     }
 
     @GetMapping("/likes")
-    public ResponseEntity<PageLikeResponse> getLikes(
+    public ResponseEntity<Page<LikeResponse>> getLikes(
             @Auth AuthUser authUser,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Page<Like> likes = likeQueryService.getLikes(authUser.getUserId(), page, size);
-        PageLikeResponse pageLikeResponse = PageLikeResponse.of(likes.getContent(), likes.getSize(), likes.getNumber(), likes.getTotalElements(), likes.getTotalPages());
+        Page<LikeResponse> pageLikeResponse = likes.map(
+                like -> LikeResponse.of(
+                        like.getId(),
+                        like.getQuote().getId(),
+                        like.getUser().getId(),
+                        like.getUser().getNickname(),
+                        like.getQuote().getTitle(),
+                        like.getQuote().getAuthor(),
+                        like.getQuote().getCategory(),
+                        like.getQuote().getPageNumber(),
+                        like.getQuote().getSentence(),
+                        like.getQuote().getThought(),
+                        like.getQuote().getIsPublic(),
+                        like.getQuote().getCreatedAt(),
+                        like.getQuote().getModifiedAt(),
+                        like.getQuote().getDeletedAt(),
+                        likeQueryService.countLikes(like.getQuote().getId())
+                ));
         return ResponseEntity.ok(pageLikeResponse);
     }
 }

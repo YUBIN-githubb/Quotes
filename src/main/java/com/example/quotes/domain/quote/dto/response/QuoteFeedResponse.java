@@ -10,13 +10,15 @@ public class QuoteFeedResponse {
     private final QuoteResponse quoteResponse;
 
     private final Long myLikeId;
+    private final Long likeCount;
 
-    private QuoteFeedResponse(Long likeId, QuoteResponse quoteResponse) {
+    private QuoteFeedResponse(Long likeId, Long likeCount, QuoteResponse quoteResponse) {
         this.myLikeId = likeId;
+        this.likeCount = likeCount;
         this.quoteResponse = quoteResponse;
     }
 
-    public static QuoteFeedResponse of(QuoteResponse quoteResponse, Long likeId) {
-        return new QuoteFeedResponse(likeId, quoteResponse);
+    public static QuoteFeedResponse of(QuoteResponse quoteResponse, Long likeId, Long likeCount) {
+        return new QuoteFeedResponse(likeId, likeCount, quoteResponse);
     }
 }

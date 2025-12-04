@@ -20,4 +20,6 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     Page<Like> findByUserId (Long userId, Pageable pageable);
 
     List<Like> findAllByUserIdAndQuoteIdIn(Long userId, List<Long> quoteIds);
+
+    Long countByQuoteId(Long quoteId);
 }
