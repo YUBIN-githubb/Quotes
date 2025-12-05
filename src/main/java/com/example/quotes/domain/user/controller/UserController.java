@@ -2,7 +2,11 @@ package com.example.quotes.domain.user.controller;
 
 import com.example.quotes.common.annotation.Auth;
 import com.example.quotes.common.dto.AuthUser;
+import com.example.quotes.domain.like.service.LikeQueryService;
 import com.example.quotes.domain.quote.dto.response.PageQuoteResponse;
+import com.example.quotes.domain.quote.dto.response.QuoteFeedResponse;
+import com.example.quotes.domain.quote.dto.response.QuoteProfileResponse;
+import com.example.quotes.domain.quote.dto.response.QuoteResponse;
 import com.example.quotes.domain.quote.entity.Quote;
 import com.example.quotes.domain.quote.service.QuoteQueryService;
 import com.example.quotes.domain.user.dto.request.UpdatePasswordRequest;
@@ -18,6 +22,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -25,11 +31,20 @@ public class UserController {
     private final UserQueryService userQueryService;
     private final UserCommandService userCommandService;
     private final QuoteQueryService quoteQueryService;
+    private final LikeQueryService likeQueryService;
 
     @GetMapping("/users")
     public ResponseEntity<UserResponse> getUser(@Auth AuthUser authUser) {
 
         User user = userQueryService.getUserById(authUser.getUserId());
+        UserResponse userResponse = UserResponse.of(user.getEmail(), user.getUserRole(), user.getProfileUrl(), user.getNickname());
+        return ResponseEntity.ok(userResponse);
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<UserResponse> getUserById(
+            @PathVariable Long userId) {
+        User user = userQueryService.getUserById(userId);
         UserResponse userResponse = UserResponse.of(user.getEmail(), user.getUserRole(), user.getProfileUrl(), user.getNickname());
         return ResponseEntity.ok(userResponse);
     }
@@ -71,5 +86,36 @@ public class UserController {
         Page<Quote> quotes = quoteQueryService.getMyQuotes(authUser.getUserId(), page, size);
         PageQuoteResponse pageQuoteResponse = PageQuoteResponse.of(quotes.getContent(), quotes.getSize(), quotes.getNumber(), quotes.getTotalElements(), quotes.getTotalPages());
         return ResponseEntity.ok(pageQuoteResponse);
+    }
+
+    @GetMapping("/users/{userId}/quotes")
+    public ResponseEntity<Page<QuoteProfileResponse>> getQuotesByUser(
+            @Auth AuthUser authUser,
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<Quote> myQuotes = quoteQueryService.getMyQuotes(userId, page, size);
+        Map<Long, Long> myLikeMap = likeQueryService.getMyLikeMap(authUser.getUserId(), myQuotes.getContent());
+        Page<QuoteProfileResponse> response = myQuotes.map(quote -> {
+            QuoteResponse basicDto = QuoteResponse.of(
+                    quote.getId(),
+                    quote.getUser().getId(),
+                    quote.getUser().getNickname(),
+                    quote.getTitle(),
+                    quote.getAuthor(),
+                    quote.getCategory(),
+                    quote.getPageNumber(),
+                    quote.getSentence(),
+                    quote.getThought(),
+                    quote.getIsPublic(),
+                    quote.getCreatedAt(),
+                    quote.getModifiedAt(),
+                    quote.getDeletedAt()
+            );
+            Long myLikeId = myLikeMap.get(quote.getId());
+            Long likeCount = likeQueryService.countLikes(quote.getId());
+            return QuoteProfileResponse.of(basicDto, myLikeId, likeCount);
+        });
+        return ResponseEntity.ok(response);
     }
 }
