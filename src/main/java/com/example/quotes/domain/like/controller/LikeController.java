@@ -49,8 +49,8 @@ public class LikeController {
                 like -> LikeResponse.of(
                         like.getId(),
                         like.getQuote().getId(),
-                        like.getUser().getId(),
-                        like.getUser().getNickname(),
+                        like.getQuote().getUser().getId(),
+                        like.getQuote().getUser().getNickname(),
                         like.getQuote().getTitle(),
                         like.getQuote().getAuthor(),
                         like.getQuote().getCategory(),
