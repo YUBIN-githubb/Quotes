@@ -1,5 +1,6 @@
 package com.example.quotes.domain.quote.service;
 
+import com.example.quotes.common.enums.IsPublic;
 import com.example.quotes.common.exceptions.CustomException;
 import com.example.quotes.domain.quote.entity.Quote;
 import com.example.quotes.domain.quote.repository.QuoteRepository;
@@ -32,6 +33,11 @@ public class QuoteQueryService {
         return quoteRepository.findByUserIdAndDeletedAtIsNull(userId, pageable);
     }
 
+    public Page<Quote> getQuoteByUserId(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return quoteRepository.findByUserIdAndDeletedAtIsNullAndIsPublic(pageable,userId,IsPublic.PUBLIC);
+    }
+
     public Quote getQuoteById(Long quoteId) {
 
         return quoteRepository.findByIdAndDeletedAtIsNull(quoteId).orElseThrow(
@@ -41,6 +47,6 @@ public class QuoteQueryService {
 
     public Page<Quote> getQuotes(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return quoteRepository.findByDeletedAtIsNull(pageable);
+        return quoteRepository.findByDeletedAtIsNullAndIsPublic(pageable, IsPublic.PUBLIC);
     }
 }

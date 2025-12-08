@@ -78,14 +78,34 @@ public class UserController {
     }
 
     @GetMapping("/users/me/quotes")
-    public ResponseEntity<PageQuoteResponse> getQuotes(
+    public ResponseEntity<Page<QuoteProfileResponse>> getQuotes(
             @Auth AuthUser authUser,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<Quote> quotes = quoteQueryService.getMyQuotes(authUser.getUserId(), page, size);
-        PageQuoteResponse pageQuoteResponse = PageQuoteResponse.of(quotes.getContent(), quotes.getSize(), quotes.getNumber(), quotes.getTotalElements(), quotes.getTotalPages());
-        return ResponseEntity.ok(pageQuoteResponse);
+        Page<Quote> myQuotes = quoteQueryService.getMyQuotes(authUser.getUserId(), page, size);
+        Map<Long, Long> myLikeMap = likeQueryService.getMyLikeMap(authUser.getUserId(), myQuotes.getContent());
+        Page<QuoteProfileResponse> response = myQuotes.map(quote -> {
+            QuoteResponse basicDto = QuoteResponse.of(
+                    quote.getId(),
+                    quote.getUser().getId(),
+                    quote.getUser().getNickname(),
+                    quote.getTitle(),
+                    quote.getAuthor(),
+                    quote.getCategory(),
+                    quote.getPageNumber(),
+                    quote.getSentence(),
+                    quote.getThought(),
+                    quote.getIsPublic(),
+                    quote.getCreatedAt(),
+                    quote.getModifiedAt(),
+                    quote.getDeletedAt()
+            );
+            Long myLikeId = myLikeMap.get(quote.getId());
+            Long likeCount = likeQueryService.countLikes(quote.getId());
+            return QuoteProfileResponse.of(basicDto, myLikeId, likeCount);
+        });
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/users/{userId}/quotes")
@@ -94,9 +114,9 @@ public class UserController {
             @PathVariable Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<Quote> myQuotes = quoteQueryService.getMyQuotes(userId, page, size);
-        Map<Long, Long> myLikeMap = likeQueryService.getMyLikeMap(authUser.getUserId(), myQuotes.getContent());
-        Page<QuoteProfileResponse> response = myQuotes.map(quote -> {
+        Page<Quote> quotes = quoteQueryService.getQuoteByUserId(userId,page,size);
+        Map<Long, Long> myLikeMap = likeQueryService.getMyLikeMap(authUser.getUserId(), quotes.getContent());
+        Page<QuoteProfileResponse> response = quotes.map(quote -> {
             QuoteResponse basicDto = QuoteResponse.of(
                     quote.getId(),
                     quote.getUser().getId(),
