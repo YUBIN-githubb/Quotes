@@ -37,7 +37,7 @@ public class UserController {
     public ResponseEntity<UserResponse> getUser(@Auth AuthUser authUser) {
 
         User user = userQueryService.getUserById(authUser.getUserId());
-        UserResponse userResponse = UserResponse.of(user.getEmail(), user.getUserRole(), user.getProfileUrl(), user.getNickname());
+        UserResponse userResponse = UserResponse.of(user.getId(), user.getEmail(), user.getUserRole(), user.getProfileUrl(), user.getNickname());
         return ResponseEntity.ok(userResponse);
     }
 
@@ -45,7 +45,7 @@ public class UserController {
     public ResponseEntity<UserResponse> getUserById(
             @PathVariable Long userId) {
         User user = userQueryService.getUserById(userId);
-        UserResponse userResponse = UserResponse.of(user.getEmail(), user.getUserRole(), user.getProfileUrl(), user.getNickname());
+        UserResponse userResponse = UserResponse.of(user.getId(),user.getEmail(), user.getUserRole(), user.getProfileUrl(), user.getNickname());
         return ResponseEntity.ok(userResponse);
     }
 
@@ -55,7 +55,7 @@ public class UserController {
             @Valid @RequestBody UpdateUserRequest request) {
 
         User user = userCommandService.updateUser(authUser.getUserId(), request.getProfileUrl(), request.getNickname());
-        UserResponse userResponse = UserResponse.of(user.getEmail(), user.getUserRole(), user.getProfileUrl(), user.getNickname());
+        UserResponse userResponse = UserResponse.of(user.getId(),user.getEmail(), user.getUserRole(), user.getProfileUrl(), user.getNickname());
         return ResponseEntity.ok(userResponse);
     }
 
