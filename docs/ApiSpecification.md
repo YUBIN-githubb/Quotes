@@ -618,3 +618,47 @@
     "error code" : "400 BAD REQUEST"
 }
 ```
+
+## Follows
+### 팔로우 생성
+```json
+{
+    "Description" : "팔로우 생성",
+    "HTTP method" : "POST",
+    "URL" : "/follows",
+    "request header" : {
+        "Content-Type" : "application/json",
+        "Authorization" : "token"
+    },
+    "request body" : {
+        "followeeId" : "Long"
+    },
+    "response header" : "None",
+    "response body" : {
+        "id" : "Long",
+        "followerId" : "Long",
+        "followeeId" : "Long",
+        "createdAt" : "LocalDateTime"
+    },
+    "success code" : "200 OK",
+    "error code" : ["404 NOT FOUND", "401 UNAUTHORIZED"]
+}
+```
+
+### 팔로우 삭제
+```json
+{
+    "Description" : "팔로우 삭제",
+    "HTTP method" : "DELETE",
+    "URL" : "/follows/{followId}",
+    "request header" : {
+        "Content-Type" : "application/json",
+        "Authorization" : "token"
+    },
+    "request body" : "None",
+    "response header" : "None",
+    "response body" : "None",
+    "success code" : "200 OK",
+    "error code" : ["404 NOT FOUND", "401 UNAUTHORIZED"]
+}
+```
