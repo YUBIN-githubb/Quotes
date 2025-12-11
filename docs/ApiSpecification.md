@@ -662,3 +662,71 @@
     "error code" : ["404 NOT FOUND", "401 UNAUTHORIZED"]
 }
 ```
+
+## 팔로우 목록 조회
+```json
+{
+    "Description" : "팔로우 목록 조회",
+    "HTTP method" : "GET",
+    "URL" : "/users/{userId}/followers",
+    "request header" : {
+        "Content-Type" : "application/json",
+        "Authorization" : "token",
+        "page" : "int",
+        "size" : "int"
+    },
+    "request body" : "None",
+    "response header" : "None",
+    "response body" : {
+    "content": [
+        {
+        "id": "Long",
+        "followerId": "Long",
+        "followerNickname": "String",
+        "followerProfileUrl": "String",
+        "createdAt" : "LocalDateTime"
+        }
+    ],
+        "size": "int",
+        "page": "int",
+        "totalElements": "long",
+        "totalPages": "int"
+    },
+    "success code" : "200 OK",
+    "error code" : "None"
+}
+```
+
+## 팔로잉 목록 조회
+```json
+{
+    "Description" : "팔로잉 목록 조회",
+    "HTTP method" : "GET",
+    "URL" : "/users/{userId}/followings",
+    "request header" : {
+        "Content-Type" : "application/json",
+        "Authorization" : "token",
+        "page" : "int",
+        "size" : "int"
+    },
+    "request body" : "None",
+    "response header" : "None",
+    "response body" : {
+    "content": [
+        {
+        "id": "Long",
+        "followeeId": "Long",
+        "followeeNickname": "String",
+        "followeeProfileUrl": "String",
+        "createdAt" : "LocalDateTime"
+        }
+    ],
+        "size": "int",
+        "page": "int",
+        "totalElements": "long",
+        "totalPages": "int"
+    },
+    "success code" : "200 OK",
+    "error code" : "None"
+}
+```
