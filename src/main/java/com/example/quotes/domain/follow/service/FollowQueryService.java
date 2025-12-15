@@ -10,6 +10,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -29,5 +31,14 @@ public class FollowQueryService {
     public Page<Follow> findFollowees(Long userId, int size, int page) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return followRepository.findByFollowerId(userId, pageable);
+    }
+
+    public List<Long> findFollowerIds(Long userId) {
+        List<Follow> followers = followRepository.findByFolloweeId(userId);
+        return followers.stream().map(
+                f -> {
+                    return f.getFollower().getId();
+                }
+        ).toList();
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface FollowRepository extends JpaRepository<Follow, Long> {
@@ -20,4 +21,7 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     @EntityGraph(attributePaths = {"followee"})
     Page<Follow> findByFollowerId(Long followerId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"follower"})
+    List<Follow> findByFolloweeId (Long followeeId);
 }
