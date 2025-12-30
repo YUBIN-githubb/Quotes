@@ -43,19 +43,7 @@ public class QuoteCommandService {
         if (quote.getIsPublic() == IsPublic.PUBLIC) {
             String key = "QUOTE_ID:" + quote.getId();
 
-            Map<String,String> quoteRedisMap = new HashMap<>();
-            quoteRedisMap.put("userId", String.valueOf(quote.getUser().getId()));
-            quoteRedisMap.put("nickname", quote.getUser().getNickname());
-            quoteRedisMap.put("title", quote.getTitle());
-            quoteRedisMap.put("author", quote.getAuthor());
-            quoteRedisMap.put("category", String.valueOf(quote.getCategory()));
-            quoteRedisMap.put("pageNumber", String.valueOf(quote.getPageNumber()));
-            quoteRedisMap.put("sentence", quote.getSentence());
-            quoteRedisMap.put("thought", quote.getThought());
-            quoteRedisMap.put("createdAt", String.valueOf(quote.getCreatedAt()));
-            quoteRedisMap.put("modifiedAt", String.valueOf(quote.getModifiedAt()));
-            quoteRedisMap.put("likeCount",  String.valueOf(0L));
-
+            Map<String, String> quoteRedisMap = convertEntityToMap(quote);
             redisTemplate.opsForHash().putAll(key, quoteRedisMap);
             redisTemplate.expire(key, QUOTE_CACHE_TTL);
             eventPublisher.publishEvent(new QuoteCreatedEvent(quote.getId(), userId));
@@ -89,18 +77,7 @@ public class QuoteCommandService {
         if (isPublic == IsPublic.PUBLIC) {
             String key = "QUOTE_ID:" + quote.getId();
 
-            Map<String,String> quoteRedisMap = new HashMap<>();
-            quoteRedisMap.put("userId", String.valueOf(quote.getUser().getId()));
-            quoteRedisMap.put("nickname", quote.getUser().getNickname());
-            quoteRedisMap.put("title", quote.getTitle());
-            quoteRedisMap.put("author", quote.getAuthor());
-            quoteRedisMap.put("category", String.valueOf(quote.getCategory()));
-            quoteRedisMap.put("pageNumber", String.valueOf(quote.getPageNumber()));
-            quoteRedisMap.put("sentence", quote.getSentence());
-            quoteRedisMap.put("thought", quote.getThought());
-            quoteRedisMap.put("createdAt", String.valueOf(quote.getCreatedAt()));
-            quoteRedisMap.put("modifiedAt", String.valueOf(quote.getModifiedAt()));
-            quoteRedisMap.put("likeCount",  String.valueOf(0L));
+            Map<String, String> quoteRedisMap = convertEntityToMap(quote);
 
             redisTemplate.opsForHash().putAll(key, quoteRedisMap);
             redisTemplate.expire(key, QUOTE_CACHE_TTL);
@@ -122,5 +99,22 @@ public class QuoteCommandService {
 
         String key = "QUOTE_ID:" + quoteId;
         redisTemplate.delete(key);
+    }
+
+    private Map<String, String> convertEntityToMap(Quote quote) {
+        Map<String, String> map = new HashMap<>();
+        map.put("userId", String.valueOf(quote.getUser().getId()));
+        map.put("nickname", quote.getUser().getNickname());
+        map.put("title", quote.getTitle());
+        map.put("author", quote.getAuthor());
+        map.put("category", quote.getCategory().name());
+        map.put("pageNumber", String.valueOf(quote.getPageNumber()));
+        map.put("sentence", quote.getSentence());
+        map.put("thought", quote.getThought());
+        map.put("createdAt", String.valueOf(quote.getCreatedAt()));
+        map.put("modifiedAt", String.valueOf(quote.getModifiedAt()));
+        map.put("likeCount",  String.valueOf(0L));
+
+        return map;
     }
 }
