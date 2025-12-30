@@ -1,6 +1,5 @@
 package com.example.quotes.domain.quote.service;
 
-import com.example.quotes.common.dto.AuthUser;
 import com.example.quotes.common.enums.Category;
 import com.example.quotes.common.enums.IsPublic;
 import com.example.quotes.common.exceptions.CustomException;
@@ -9,14 +8,12 @@ import com.example.quotes.domain.quote.entity.Quote;
 import com.example.quotes.domain.quote.repository.QuoteRepository;
 import com.example.quotes.domain.user.entity.User;
 import com.example.quotes.domain.user.service.UserQueryService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -35,6 +32,8 @@ public class QuoteCommandService {
     private final RedisTemplate<String, String> redisTemplate;
     private final ApplicationEventPublisher eventPublisher;
 
+    private final static Duration QUOTE_CACHE_TTL = Duration.ofDays(7);
+
     public Quote createQuote(Long userId, String title, String author, Category category, Long pageNumber, String sentence, String thought, IsPublic isPublic) {
 
         User user = userQueryService.getUserById(userId);
@@ -44,23 +43,21 @@ public class QuoteCommandService {
         if (quote.getIsPublic() == IsPublic.PUBLIC) {
             String key = "QUOTE_ID:" + quote.getId();
 
-            Map<String, String> quoteMap = new HashMap<>();
-            quoteMap.put("id", String.valueOf(quote.getId()));
-            quoteMap.put("userId", String.valueOf(quote.getUser().getId()));
-            quoteMap.put("title", quote.getTitle());
-            quoteMap.put("author", quote.getAuthor());
-            quoteMap.put("category", quote.getCategory().name()); // Enum -> String
-            quoteMap.put("pageNumber", String.valueOf(quote.getPageNumber()));
-            quoteMap.put("sentence", quote.getSentence());
-            quoteMap.put("thought", quote.getThought());
-            quoteMap.put("isPublic", quote.getIsPublic().name()); // Enum -> String
-            // 날짜는 ISO-8601 형식 문자열로 변환 (예: 2024-12-13T14:30:00)
-            quoteMap.put("createdAt", quote.getCreatedAt().toString());
-            quoteMap.put("modifiedAt", quote.getModifiedAt().toString());
+            Map<String,String> quoteRedisMap = new HashMap<>();
+            quoteRedisMap.put("userId", String.valueOf(quote.getUser().getId()));
+            quoteRedisMap.put("nickname", quote.getUser().getNickname());
+            quoteRedisMap.put("title", quote.getTitle());
+            quoteRedisMap.put("author", quote.getAuthor());
+            quoteRedisMap.put("category", String.valueOf(quote.getCategory()));
+            quoteRedisMap.put("pageNumber", String.valueOf(quote.getPageNumber()));
+            quoteRedisMap.put("sentence", quote.getSentence());
+            quoteRedisMap.put("thought", quote.getThought());
+            quoteRedisMap.put("createdAt", String.valueOf(quote.getCreatedAt()));
+            quoteRedisMap.put("modifiedAt", String.valueOf(quote.getModifiedAt()));
+            quoteRedisMap.put("likeCount",  String.valueOf(0L));
 
-            redisTemplate.opsForHash().putAll(key, quoteMap);
-            redisTemplate.expire(key, Duration.ofDays(7));
-
+            redisTemplate.opsForHash().putAll(key, quoteRedisMap);
+            redisTemplate.expire(key, QUOTE_CACHE_TTL);
             eventPublisher.publishEvent(new QuoteCreatedEvent(quote.getId(), userId));
         }
         return quote;
@@ -92,22 +89,21 @@ public class QuoteCommandService {
         if (isPublic == IsPublic.PUBLIC) {
             String key = "QUOTE_ID:" + quote.getId();
 
-            Map<String, String> quoteMap = new HashMap<>();
-            quoteMap.put("id", String.valueOf(quote.getId()));
-            quoteMap.put("userId", String.valueOf(quote.getUser().getId()));
-            quoteMap.put("title", quote.getTitle());
-            quoteMap.put("author", quote.getAuthor());
-            quoteMap.put("category", quote.getCategory().name()); // Enum -> String
-            quoteMap.put("pageNumber", String.valueOf(quote.getPageNumber()));
-            quoteMap.put("sentence", quote.getSentence());
-            quoteMap.put("thought", quote.getThought());
-            quoteMap.put("isPublic", quote.getIsPublic().name()); // Enum -> String
-            // 날짜는 ISO-8601 형식 문자열로 변환 (예: 2024-12-13T14:30:00)
-            quoteMap.put("createdAt", quote.getCreatedAt().toString());
-            quoteMap.put("modifiedAt", quote.getModifiedAt().toString());
+            Map<String,String> quoteRedisMap = new HashMap<>();
+            quoteRedisMap.put("userId", String.valueOf(quote.getUser().getId()));
+            quoteRedisMap.put("nickname", quote.getUser().getNickname());
+            quoteRedisMap.put("title", quote.getTitle());
+            quoteRedisMap.put("author", quote.getAuthor());
+            quoteRedisMap.put("category", String.valueOf(quote.getCategory()));
+            quoteRedisMap.put("pageNumber", String.valueOf(quote.getPageNumber()));
+            quoteRedisMap.put("sentence", quote.getSentence());
+            quoteRedisMap.put("thought", quote.getThought());
+            quoteRedisMap.put("createdAt", String.valueOf(quote.getCreatedAt()));
+            quoteRedisMap.put("modifiedAt", String.valueOf(quote.getModifiedAt()));
+            quoteRedisMap.put("likeCount",  String.valueOf(0L));
 
-            redisTemplate.opsForHash().putAll(key, quoteMap);
-            redisTemplate.expire(key, Duration.ofDays(7));
+            redisTemplate.opsForHash().putAll(key, quoteRedisMap);
+            redisTemplate.expire(key, QUOTE_CACHE_TTL);
         } else {
             String key = "QUOTE_ID:" + quote.getId();
             redisTemplate.delete(key);
