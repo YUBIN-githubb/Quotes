@@ -41,7 +41,7 @@ public class FanoutEventListener {
             String key = "NEWSFEED:USER:" + followerId;
             String value = String.valueOf(quoteId);
             redisTemplate.opsForList().leftPush(key, value);
-            redisTemplate.opsForList().trim(key, 0, 39);
+            redisTemplate.opsForList().trim(key, 0, 49);
             redisTemplate.expire(key, Duration.ofDays(7));
         });
 
