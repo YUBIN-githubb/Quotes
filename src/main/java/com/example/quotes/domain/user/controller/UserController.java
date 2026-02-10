@@ -13,6 +13,8 @@ import com.example.quotes.domain.quote.service.QuoteQueryService;
 import com.example.quotes.domain.user.dto.request.UpdatePasswordRequest;
 import com.example.quotes.domain.user.dto.request.UpdateUserRequest;
 import com.example.quotes.domain.user.dto.request.WithdrawUserRequest;
+import com.example.quotes.domain.follow.service.FollowQueryService;
+import com.example.quotes.domain.user.dto.response.TopUserResponse;
 import com.example.quotes.domain.user.dto.response.UserResponse;
 import com.example.quotes.domain.user.entity.User;
 import com.example.quotes.domain.user.service.UserCommandService;
@@ -23,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -34,6 +37,7 @@ public class UserController {
     private final QuoteQueryService quoteQueryService;
     private final LikeQueryService likeQueryService;
     private final LikeCountCacheService likeCountCacheService;
+    private final FollowQueryService followQueryService;
 
     @GetMapping("/users")
     public ResponseEntity<UserResponse> getUser(@Auth AuthUser authUser) {
@@ -41,6 +45,12 @@ public class UserController {
         User user = userQueryService.getUserById(authUser.getUserId());
         UserResponse userResponse = UserResponse.of(user.getId(), user.getEmail(), user.getUserRole(), user.getProfileUrl(), user.getNickname());
         return ResponseEntity.ok(userResponse);
+    }
+
+    @GetMapping("/users/top")
+    public ResponseEntity<List<TopUserResponse>> getTopUsers() {
+        List<TopUserResponse> topUsers = followQueryService.findTopUsersByFollowerCount();
+        return ResponseEntity.ok(topUsers);
     }
 
     @GetMapping("/users/{userId}")
