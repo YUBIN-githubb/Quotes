@@ -4,6 +4,7 @@ import com.example.quotes.common.enums.Category;
 import com.example.quotes.common.enums.IsPublic;
 import com.example.quotes.domain.like.entity.Like;
 import com.example.quotes.domain.like.repository.LikeRepository;
+import com.example.quotes.domain.like.service.LikeCountCacheService;
 import com.example.quotes.domain.quote.dto.response.QuoteFeedResponse;
 import com.example.quotes.domain.quote.dto.response.QuoteResponse;
 import com.example.quotes.domain.quote.entity.Quote;
@@ -28,6 +29,7 @@ public class NewsfeedQueryService {
     private final RedisTemplate<String, String> redisTemplate;
     private final QuoteRepository quoteRepository;
     private final LikeRepository likeRepository;
+    private final LikeCountCacheService likeCountCacheService;
 
     private static final String NEWSFEED_KEY_PREFIX = "NEWSFEED:USER:";
     private static final String QUOTE_KEY_PREFIX = "QUOTE_ID:";
@@ -151,11 +153,6 @@ public class NewsfeedQueryService {
     }
 
     private Long getLikeCountFromCache(Long quoteId) {
-        String quoteKey = QUOTE_KEY_PREFIX + quoteId;
-        Object likeCountObj = redisTemplate.opsForHash().get(quoteKey, "likeCount");
-        if (likeCountObj != null) {
-            return Long.valueOf((String) likeCountObj);
-        }
-        return likeRepository.countByQuoteId(quoteId);
+        return likeCountCacheService.getLikeCount(quoteId);
     }
 }

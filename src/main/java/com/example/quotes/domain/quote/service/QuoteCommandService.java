@@ -113,8 +113,6 @@ public class QuoteCommandService {
         map.put("thought", quote.getThought());
         map.put("createdAt", String.valueOf(quote.getCreatedAt()));
         map.put("modifiedAt", String.valueOf(quote.getModifiedAt()));
-        map.put("likeCount",  String.valueOf(0L));
-
         return map;
     }
 }

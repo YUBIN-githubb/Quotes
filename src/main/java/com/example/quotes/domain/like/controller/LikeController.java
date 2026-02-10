@@ -6,6 +6,7 @@ import com.example.quotes.domain.like.dto.response.CreateLikeResponse;
 import com.example.quotes.domain.like.dto.response.LikeResponse;
 import com.example.quotes.domain.like.entity.Like;
 import com.example.quotes.domain.like.service.LikeCommandService;
+import com.example.quotes.domain.like.service.LikeCountCacheService;
 import com.example.quotes.domain.like.service.LikeQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ public class LikeController {
 
     private final LikeCommandService likeCommandService;
     private final LikeQueryService likeQueryService;
+    private final LikeCountCacheService likeCountCacheService;
 
     @PostMapping("/quotes/{quoteId}/likes")
     public ResponseEntity<CreateLikeResponse> createLike(
@@ -61,7 +63,7 @@ public class LikeController {
                         like.getQuote().getCreatedAt(),
                         like.getQuote().getModifiedAt(),
                         like.getQuote().getDeletedAt(),
-                        likeQueryService.countLikes(like.getQuote().getId())
+                        likeCountCacheService.getLikeCount(like.getQuote().getId())
                 ));
         return ResponseEntity.ok(pageLikeResponse);
     }
