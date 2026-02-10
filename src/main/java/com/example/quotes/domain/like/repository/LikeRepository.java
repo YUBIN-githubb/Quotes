@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import org.springframework.data.jpa.repository.Query;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -22,4 +24,7 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     List<Like> findAllByUserIdAndQuoteIdIn(Long userId, List<Long> quoteIds);
 
     Long countByQuoteId(Long quoteId);
+
+    @Query("SELECT l.user.id FROM Like l WHERE l.quote.id = :quoteId")
+    List<Long> findAllUserIdsByQuoteId(Long quoteId);
 }

@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -15,6 +17,7 @@ public class LikeCountCacheService {
     private final LikeRepository likeRepository;
 
     private static final String LIKE_COUNT_KEY_PREFIX = "LIKE_COUNT:";
+    private static final String QUOTE_LIKED_KEY_PREFIX = "QUOTE_LIKED:";
 
     public Long getLikeCount(Long quoteId) {
         String key = LIKE_COUNT_KEY_PREFIX + quoteId;
@@ -54,5 +57,35 @@ public class LikeCountCacheService {
         if (currentValue != null && currentValue < 0) {
             redisTemplate.opsForValue().set(key, "0");
         }
+    }
+
+    public boolean isLiked(Long userId, Long quoteId) {
+        String key = QUOTE_LIKED_KEY_PREFIX + quoteId;
+
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(key))) {
+            // DB fallback: Set 초기화
+            List<Long> userIds = likeRepository.findAllUserIdsByQuoteId(quoteId);
+            if (userIds.isEmpty()) {
+                return false;
+            }
+            String[] userIdStrings = userIds.stream()
+                    .map(String::valueOf)
+                    .toArray(String[]::new);
+            redisTemplate.opsForSet().add(key, userIdStrings);
+        }
+
+        return Boolean.TRUE.equals(
+                redisTemplate.opsForSet().isMember(key, String.valueOf(userId))
+        );
+    }
+
+    public void addLike(Long userId, Long quoteId) {
+        String key = QUOTE_LIKED_KEY_PREFIX + quoteId;
+        redisTemplate.opsForSet().add(key, String.valueOf(userId));
+    }
+
+    public void removeLike(Long userId, Long quoteId) {
+        String key = QUOTE_LIKED_KEY_PREFIX + quoteId;
+        redisTemplate.opsForSet().remove(key, String.valueOf(userId));
     }
 }

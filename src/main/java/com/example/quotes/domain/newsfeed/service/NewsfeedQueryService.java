@@ -2,8 +2,6 @@ package com.example.quotes.domain.newsfeed.service;
 
 import com.example.quotes.common.enums.Category;
 import com.example.quotes.common.enums.IsPublic;
-import com.example.quotes.domain.like.entity.Like;
-import com.example.quotes.domain.like.repository.LikeRepository;
 import com.example.quotes.domain.like.service.LikeCountCacheService;
 import com.example.quotes.domain.quote.dto.response.QuoteFeedResponse;
 import com.example.quotes.domain.quote.dto.response.QuoteResponse;
@@ -28,7 +26,6 @@ public class NewsfeedQueryService {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final QuoteRepository quoteRepository;
-    private final LikeRepository likeRepository;
     private final LikeCountCacheService likeCountCacheService;
 
     private static final String NEWSFEED_KEY_PREFIX = "NEWSFEED:USER:";
@@ -99,24 +96,12 @@ public class NewsfeedQueryService {
                 .filter(Objects::nonNull)
                 .toList();
 
-        // 5. 좋아요 정보 조회
-        List<Long> responseQuoteIds = orderedResponses.stream()
-                .map(QuoteResponse::getId)
-                .toList();
-
-        List<Like> userLikes = likeRepository.findAllByUserIdAndQuoteIdIn(userId, responseQuoteIds);
-        Map<Long, Long> likeMap = userLikes.stream()
-                .collect(Collectors.toMap(
-                        like -> like.getQuote().getId(),
-                        Like::getId
-                ));
-
-        // 6. QuoteFeedResponse로 조립
+        // 5. QuoteFeedResponse로 조립 (SISMEMBER 기반 좋아요 여부 조회)
         return orderedResponses.stream()
                 .map(quoteResponse -> {
-                    Long myLikeId = likeMap.get(quoteResponse.getId());
+                    boolean isLiked = likeCountCacheService.isLiked(userId, quoteResponse.getId());
                     Long likeCount = getLikeCountFromCache(quoteResponse.getId());
-                    return QuoteFeedResponse.of(quoteResponse, myLikeId, likeCount);
+                    return QuoteFeedResponse.of(quoteResponse, isLiked, likeCount);
                 })
                 .toList();
     }

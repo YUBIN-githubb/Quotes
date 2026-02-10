@@ -9,16 +9,16 @@ public class QuoteProfileResponse {
     @JsonUnwrapped
     private final QuoteResponse quoteResponse;
 
-    private final Long myLikeId;
+    private final boolean isLiked;
     private final Long likeCount;
 
-    private QuoteProfileResponse(QuoteResponse quoteResponse, Long myLikeId, Long likeCount) {
+    private QuoteProfileResponse(QuoteResponse quoteResponse, boolean isLiked, Long likeCount) {
         this.quoteResponse = quoteResponse;
-        this.myLikeId = myLikeId;
+        this.isLiked = isLiked;
         this.likeCount = likeCount;
     }
 
-    public static QuoteProfileResponse of(QuoteResponse quoteResponse, Long myLikeId, Long likeCount) {
-        return new QuoteProfileResponse(quoteResponse, myLikeId, likeCount);
+    public static QuoteProfileResponse of(QuoteResponse quoteResponse, boolean isLiked, Long likeCount) {
+        return new QuoteProfileResponse(quoteResponse, isLiked, likeCount);
     }
 }

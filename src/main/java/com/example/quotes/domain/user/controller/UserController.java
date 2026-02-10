@@ -2,6 +2,7 @@ package com.example.quotes.domain.user.controller;
 
 import com.example.quotes.common.annotation.Auth;
 import com.example.quotes.common.dto.AuthUser;
+import com.example.quotes.domain.like.service.LikeCountCacheService;
 import com.example.quotes.domain.like.service.LikeQueryService;
 import com.example.quotes.domain.quote.dto.response.PageQuoteResponse;
 import com.example.quotes.domain.quote.dto.response.QuoteFeedResponse;
@@ -32,6 +33,7 @@ public class UserController {
     private final UserCommandService userCommandService;
     private final QuoteQueryService quoteQueryService;
     private final LikeQueryService likeQueryService;
+    private final LikeCountCacheService likeCountCacheService;
 
     @GetMapping("/users")
     public ResponseEntity<UserResponse> getUser(@Auth AuthUser authUser) {
@@ -84,7 +86,7 @@ public class UserController {
             @RequestParam(defaultValue = "10") int size) {
 
         Page<Quote> myQuotes = quoteQueryService.getMyQuotes(authUser.getUserId(), page, size);
-        Map<Long, Long> myLikeMap = likeQueryService.getMyLikeMap(authUser.getUserId(), myQuotes.getContent());
+        Map<Long, Boolean> myLikeMap = likeQueryService.getMyLikeMap(authUser.getUserId(), myQuotes.getContent());
         Page<QuoteProfileResponse> response = myQuotes.map(quote -> {
             QuoteResponse basicDto = QuoteResponse.of(
                     quote.getId(),
@@ -101,9 +103,9 @@ public class UserController {
                     quote.getModifiedAt(),
                     quote.getDeletedAt()
             );
-            Long myLikeId = myLikeMap.get(quote.getId());
-            Long likeCount = likeQueryService.countLikes(quote.getId());
-            return QuoteProfileResponse.of(basicDto, myLikeId, likeCount);
+            boolean isLiked = Boolean.TRUE.equals(myLikeMap.get(quote.getId()));
+            Long likeCount = likeCountCacheService.getLikeCount(quote.getId());
+            return QuoteProfileResponse.of(basicDto, isLiked, likeCount);
         });
         return ResponseEntity.ok(response);
     }
@@ -115,7 +117,7 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Page<Quote> quotes = quoteQueryService.getQuoteByUserId(userId,page,size);
-        Map<Long, Long> myLikeMap = likeQueryService.getMyLikeMap(authUser.getUserId(), quotes.getContent());
+        Map<Long, Boolean> myLikeMap = likeQueryService.getMyLikeMap(authUser.getUserId(), quotes.getContent());
         Page<QuoteProfileResponse> response = quotes.map(quote -> {
             QuoteResponse basicDto = QuoteResponse.of(
                     quote.getId(),
@@ -132,9 +134,9 @@ public class UserController {
                     quote.getModifiedAt(),
                     quote.getDeletedAt()
             );
-            Long myLikeId = myLikeMap.get(quote.getId());
-            Long likeCount = likeQueryService.countLikes(quote.getId());
-            return QuoteProfileResponse.of(basicDto, myLikeId, likeCount);
+            boolean isLiked = Boolean.TRUE.equals(myLikeMap.get(quote.getId()));
+            Long likeCount = likeCountCacheService.getLikeCount(quote.getId());
+            return QuoteProfileResponse.of(basicDto, isLiked, likeCount);
         });
         return ResponseEntity.ok(response);
     }

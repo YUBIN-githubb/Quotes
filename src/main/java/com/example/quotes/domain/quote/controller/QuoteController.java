@@ -2,6 +2,7 @@ package com.example.quotes.domain.quote.controller;
 
 import com.example.quotes.common.annotation.Auth;
 import com.example.quotes.common.dto.AuthUser;
+import com.example.quotes.domain.like.service.LikeCountCacheService;
 import com.example.quotes.domain.like.service.LikeQueryService;
 import com.example.quotes.domain.quote.dto.request.CreateQuoteRequest;
 import com.example.quotes.domain.quote.dto.request.UpdateQuoteIsPublicRequest;
@@ -28,6 +29,7 @@ public class QuoteController {
     private final QuoteCommandService quoteCommandService;
     private final QuoteQueryService quoteQueryService;
     private final LikeQueryService likeQueryService;
+    private final LikeCountCacheService likeCountCacheService;
 
     @PostMapping("/quotes")
     public ResponseEntity<QuoteResponse> createQuote(
@@ -126,7 +128,7 @@ public class QuoteController {
         Page<Quote> quotePage = quoteQueryService.getQuotes(page, size);
 
         // 2. 내 좋아요 데이터 가져오기
-        Map<Long, Long> likeMap = likeQueryService.getMyLikeMap(authUser.getUserId(), quotePage.getContent());
+        Map<Long, Boolean> likeMap = likeQueryService.getMyLikeMap(authUser.getUserId(), quotePage.getContent());
 
         // 3. 조립
         Page<QuoteFeedResponse> response = quotePage.map(quote -> {
@@ -145,9 +147,9 @@ public class QuoteController {
                     quote.getModifiedAt(),
                     quote.getDeletedAt()
             );
-            Long myLikeId = likeMap.get(quote.getId());
-            Long likeCount = likeQueryService.countLikes(quote.getId());
-            return QuoteFeedResponse.of(basicDto, myLikeId, likeCount);
+            boolean isLiked = Boolean.TRUE.equals(likeMap.get(quote.getId()));
+            Long likeCount = likeCountCacheService.getLikeCount(quote.getId());
+            return QuoteFeedResponse.of(basicDto, isLiked, likeCount);
         });
 
         return ResponseEntity.ok(response);

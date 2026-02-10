@@ -38,6 +38,7 @@ public class LikeCommandService {
         Like like = Like.create(user, quote);
         likeRepository.save(like);
         likeCountCacheService.increment(quoteId);
+        likeCountCacheService.addLike(userId, quoteId);
         return like;
     }
 
@@ -56,5 +57,6 @@ public class LikeCommandService {
 
         likeRepository.delete(like);
         likeCountCacheService.decrement(quoteId);
+        likeCountCacheService.removeLike(userId, quoteId);
     }
 }

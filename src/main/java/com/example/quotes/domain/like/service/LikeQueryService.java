@@ -1,6 +1,5 @@
 package com.example.quotes.domain.like.service;
 
-import com.example.quotes.common.dto.AuthUser;
 import com.example.quotes.domain.like.entity.Like;
 import com.example.quotes.domain.like.repository.LikeRepository;
 import com.example.quotes.domain.quote.entity.Quote;
@@ -22,6 +21,7 @@ import java.util.stream.Collectors;
 public class LikeQueryService {
 
     private final LikeRepository likeRepository;
+    private final LikeCountCacheService likeCountCacheService;
 
     public Page<Like> getLikes(Long userId, int page, int size) {
 
@@ -29,22 +29,15 @@ public class LikeQueryService {
         return likeRepository.findByUserId(userId, pageable);
     }
 
-    public Map<Long, Long> getMyLikeMap(Long userId, List<Quote> quotes) {
+    public Map<Long, Boolean> getMyLikeMap(Long userId, List<Quote> quotes) {
         if (userId == null || quotes.isEmpty()) {
             return Collections.emptyMap();
         }
 
-        List<Long> quoteIds = quotes.stream()
-                .map(Quote::getId)
-                .toList();
-
-        List<Like> myLikes = likeRepository.findAllByUserIdAndQuoteIdIn(userId, quoteIds);
-
-        // QuoteId -> LikeId 매핑으로 변환
-        return myLikes.stream()
+        return quotes.stream()
                 .collect(Collectors.toMap(
-                        like -> like.getQuote().getId(),
-                        Like::getId
+                        Quote::getId,
+                        quote -> likeCountCacheService.isLiked(userId, quote.getId())
                 ));
     }
 
